@@ -7,16 +7,16 @@ Plug 'tpope/vim-fugitive'
 Plug 'jamessan/vim-gnupg'
 Plug 'vim-scripts/info.vim'
 Plug 'msanders/snipmate.vim'
-Plug 'davidoc/taskpaper.vim'
 Plug 'nelstrom/vim-markdown-folding'
 Plug 'tpope/vim-unimpaired'
 Plug '0rca/vim-mikrotik'
 Plug '~/.vim/manual-plugins/taglist'
 Plug 'Valloric/YouCompleteMe'
 Plug 'davidhalter/jedi-vim'
-Plug 'freitass/todo.txt-vim'
+Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-surround'
 Plug 'derekwyatt/vim-scala'
+Plug 'kien/ctrlp.vim'
 
 call plug#end()
 
@@ -87,6 +87,8 @@ autocmd BufNewFile,BufRead *.dhtml set filetype=htmldjango
 autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
 autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 
+autocmd FileType c,cpp,java,php,perl,python autocmd BufWritePre * :%s/\s\+$//e
+
 " VLC development formatting
 autocmd BufNewFile,BufRead,BufEnter /Users/aleksandr/development/VLC/vlc/* set nowrap tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 
@@ -120,6 +122,9 @@ au VimLeave * :call SaveSession()
 function! ToggleWindowSize()
 	if winheight(0) == 1
 		resize
+	endif
+	if winwidth(0) == 1
+		vertical resize
 	endif
 endfunction
 au WinEnter * :call ToggleWindowSize() 
@@ -402,6 +407,7 @@ if has('persistent_undo') && has('autocmd')
     augroup END
 endif
 
+let g:ack_default_options = " -H --nocolor --nogroup --column "
 " Don't keep viminfo for files in temp directories or shm
 if has('viminfo')
     if has('autocmd')
@@ -420,3 +426,23 @@ autocmd User fugitive
   \ endif
 
 autocmd BufReadPost fugitive://* set bufhidden=delete
+
+nnoremap <Right> <C-w>l
+nnoremap <Left> <C-w>h
+nnoremap <Up> <C-w>k
+nnoremap <Down> <C-w>j
+
+if exists('$TMUX')
+	set mouse=a
+endif
+
+fun VimGrepSubs()
+	lvimgrep /^sub.*{/ %
+	lopen
+endfun
+nnoremap <leader>fs :call VimGrepSubs()<CR>
+nnoremap <leader>fc :lclose<CR>
+
+autocmd BufEnter * :syntax sync fromstart
+
+noremap <silent> <Leader>vs :<C-u>let @z=&so<CR>:set so=0 noscb<CR>:bo vs<CR>Lkkkkkzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
