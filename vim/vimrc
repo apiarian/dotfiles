@@ -294,8 +294,6 @@ if has("gui_running")
 endif
 
 " line numbers
-autocmd InsertEnter * :set norelativenumber
-autocmd InsertLeave * :set relativenumber
 function! NumberToggle()
   if(&relativenumber == 1)
     set norelativenumber
