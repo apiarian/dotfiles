@@ -1,45 +1,28 @@
-call plug#begin('~/.vim/plugged/')
+source ~/.vim/packages.vim
 
-Plug 'morhetz/gruvbox'
-Plug 'jlanzarotta/bufexplorer'
-Plug 'vim-scripts/django.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'jamessan/vim-gnupg'
-Plug 'vim-scripts/info.vim'
-Plug 'msanders/snipmate.vim'
-Plug 'nelstrom/vim-markdown-folding'
-Plug 'tpope/vim-unimpaired'
-Plug '0rca/vim-mikrotik'
-Plug '~/.vim/manual-plugins/taglist'
-Plug 'Valloric/YouCompleteMe'
-Plug 'davidhalter/jedi-vim'
-Plug 'mileszs/ack.vim'
-Plug 'tpope/vim-surround'
-Plug 'derekwyatt/vim-scala'
-Plug 'kien/ctrlp.vim'
-
-call plug#end()
+let g:deoplete#enable_at_startup = 1
 
 set nocompatible
-if has("autocmd")
-	filetype plugin indent on
-endif
+
+" all the plugin detection and stuff
+filetype plugin indent on
 
 " enable syntax in terminals which can display colors
 if has('syntax') && (&t_Co > 2)
 	syntax enable
-  set background=dark
+	colorscheme solarized
+	set background=dark
 endif
 
-set history=50
-
-"command line completion
+" command line completion
 set wildmode=list:longest,full
+set wildignorecase
 
+" where are we?
 set showmode
 set showcmd
 
-"indents of 2 spaces, indents copy down
+" indentation controls
 set shiftwidth=2
 set tabstop=2
 set softtabstop=2
@@ -48,77 +31,85 @@ set shiftround
 set autoindent
 set smartindent
 
-"normally dont automatically format text as it is typed
+" don't reformat text automatically
 set formatoptions-=t
+
 set textwidth=79
 
-" get rid of the default style of C comments, and define a style with two stars
-" at the start of `middle' rows which (looks nicer and) avoids asterisks used
-" for bullet lists being treated like C comments; then define a bullet list
-" style for single stars (like already is for hyphens):
-set comments-=s1:/*,mb:*,ex:*/
-set comments+=s:/*,mb:**,ex:*/
-set comments+=fb:*
-
-set comments+=b:\"
-set comments+=n::
-
-filetype on
-
+" spelling
 set spelllang=en_us
 
-autocmd BufNewFile,BufRead *.txt set filetype=human
-autocmd FileType mail,human set formatoptions+=t ai textwidth=72 spell
-autocmd FileType c,cpp,slang, set cindent
-autocmd FileType c set formatoptions+=ro
-autocmd FileType perl set smartindent
-autocmd FileType make set noexpandtab shiftwidth=8
-"autocmd FileType python set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-autocmd BufNewFile,BufRead *.markdown set filetype=markdown
-autocmd FileType markdown set formatoptions=tcroqn2 comments=n:&gt; ai textwidth=80 spell
-autocmd FileType help set nospell
-autocmd FileType htmldjango set spell
-autocmd FileType human setlocal foldmethod=expr
-autocmd FileType human setlocal foldexpr=(getline(v:lnum)=~'^$')?-1:((indent(v:lnum)<indent(v:lnum+1))?('>'.indent(v:lnum+1)):indent(v:lnum))
-autocmd FileType human set foldtext=getline(v:foldstart)
-autocmd FileType human set fillchars=fold:\ 
-autocmd BufNewFile,BufRead *.dhtml set filetype=htmldjango
-
-autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
-autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
-
-autocmd FileType c,cpp,java,php,perl,python autocmd BufWritePre * :%s/\s\+$//e
-
-" VLC development formatting
-autocmd BufNewFile,BufRead,BufEnter /Users/aleksandr/development/VLC/vlc/* set nowrap tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-
-" django templates
-autocmd BufNewFile,BufRead,BufEnter /Users/aleksandr/development/radio/Digital-Voice-Recorder-Project/Server-Development/DVR_server/*/templates/*.html set filetype=htmldjango
-
-"line numbers
-set number
-
-"reload files edited externally
+" reload files edited externally automatically
 set autoread
 
-"space to insert a character
+" highlight search stuff
+set hlsearch
+
+" hidden buffers hang around
+set hidden
+
+" let embedded terminals know that they're embedded
+let $VIMTERM = '(vim)'
+
+" start with all folds open
+set foldlevelstart=100
+
+" split in the right direction
+set splitbelow
+set splitright
+
+" break long things
+set linebreak
+
+" completion
+set completeopt=longest,menuone
+
+"
+" handy bindings
+"
+
+" space to insert a character
 nmap <Space> i_<Esc>r
 
-" tab and shift tab to navigate tabs
-nmap <C-Tab> gt
-nmap <C-S-Tab> gT
+" Y to yank to the end of the line from the cursor
+map Y y%
 
-function! SaveSession()
-	if v:this_session != ""
-		echomsg "Saving session."
-		exe 'mksession! ' . '"' . v:this_session . '"'
-	endif
-endfunction
+" let backspace span lines
+set backspace=2
 
-au VimLeave * :call SaveSession()
+" better movement
+nnoremap j gj
+nnoremap k gk
+vnoremap j gj
+vnoremap k gk
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
 
-"vertically resize window when its just one line high
-"  toggles between fullscreen (almost) windows
+" jump around windows
+ nnoremap <Right> <C-w>l
+ nnoremap <Left> <C-w>h
+ nnoremap <Up> <C-w>k
+ nnoremap <Down> <C-w>j
+
+" move lines
+nmap mj ddp
+nmap mk dd<Up>P
+nmap mJ ddGp
+nmap mK ddggP
+
+" search next and center
+nnoremap n nzz
+nnoremap N Nzz
+
+" quick escape
+inoremap jk <Esc>
+
+"
+" interface improvements
+"
+
+" vertically resize window when it's just one line high, toggles between
+" fullscreen windows
 function! ToggleWindowSize()
 	if winheight(0) == 1
 		resize
@@ -127,320 +118,66 @@ function! ToggleWindowSize()
 		vertical resize
 	endif
 endfunction
-au WinEnter * :call ToggleWindowSize() 
+autocmd WinEnter * :call ToggleWindowSize()
 
-function! LoadCscope()
-	let db = findfile("cscope.out", ".;")
-	if (!empty(db))
-		let path = strpart(db, 0, match(db, "/cscope.out$"))
-		set nocscopeverbose " suppress 'duplicate connection' error
-		exe "cs add " . db . " " . path
-		set cscopeverbose
-	endif
-endfunction
-au BufEnter /* call LoadCscope()
-
-" Highlight Search
-set hlsearch
-
-" Status line
+" status line
 set laststatus=2
 set statusline=%F%m%r%{fugitive#statusline()}%h%w\%=%y[L:\%l\ C:\%c\ A:\%b\ H:\x%02B\ P:\%p%%]
 
-" Showing invisibles
+" show invisibles
+
 set list
 set listchars=tab:▸\ ,eol:¬
 
-" hidden background buffers
-set hidden
-
-" paragraph reformatting
-" set formatprg=par
-
-" Running the current file
-nmap <F5> :w<CR>:!%:p<CR>
-imap <F5> <Esc>:w<CR>:!%:p<CR>
-
-" autosource on vimrc edit
-if has("autocmd")
-	autocmd BufWritePost .vimrc source $MYVIMRC
-endif
-
-" Y to yank to the end of the line from cursor
-map Y y$
-
-" Add vim to the environment variables for display within the prompt
-let $VIMTERM = '(vim)'
-
-" Make backspace span lines
-set backspace=indent,eol,start
-
-" Timestamp mapping
-iab <expr> dts strftime("%Y-%m-%d %a %H:%M:%S")
-iab <expr> ds strftime("%Y-%m-%d %a")
-nnoremap <Leader>hd /<C-r>=strftime("%Y-%m-%d")<CR><CR>
-nnoremap <Leader>hm /<C-r>=strftime("%Y-%m")<CR><CR>
-nnoremap <Leader>hn :nohl<CR>
-
-nnoremap j gj
-nnoremap k gk
-vnoremap j gj
-vnoremap k gk
-nnoremap <Down> gj
-nnoremap <Up> gk
-vnoremap <Down> gj
-vnoremap <Up> gk
-inoremap <Down> <C-o>gj
-inoremap <Up> <C-o>gk
-nmap mj ddp
-nmap mk dd<Up>P
-nmap mJ ddGp
-nmap mK ddggP
-
-nnoremap n nzz
-nnoremap N Nzz
-
-" TagList
-nnoremap <F4> :TlistToggle<CR>
-let Tlist_Process_File_Always = 1
-let Tlist_Show_Menu = 1
-
-" replace all instances and highlight the new
-function! RepAll(srch,rplc)
-	echo 'Replacing all instances of "'.a:srch.'" with "'.a:rplc.'".'
-	exe "%substitute/".a:srch."/".a:rplc."/g"
-	exe "/".a:rplc.""
-	set hls
-endfunction
-com! -nargs=* Replace call RepAll(<f-args>) | set hls
-
-" OS X clipboard support
-" set clipboard=unnamed
-
-" replace selected text in visual mode
-" Escape special characters in a string for exact matching.
-" This is useful to copying strings from the file to the search tool
-" Based on this - http://peterodding.com/code/vim/profile/autoload/xolox/escape.vim
-function! EscapeString (string)
-  let string=a:string
-  " Escape regex characters
-  let string = escape(string, '^$.*\/~[]')
-  " Escape the line endings
-  let string = substitute(string, '\n', '\\n', 'g')
-  return string
-endfunction
-
-" Get the current visual block for search and replaces
-" This function passed the visual block through a string escape function
-" Based on this - http://stackoverflow.com/questions/676600/vim-replace-selected-text/677918#677918
-function! GetVisual() range
-  " Save the current register and clipboard
-  let reg_save = getreg('"')
-  let regtype_save = getregtype('"')
-  let cb_save = &clipboard
-  set clipboard&
-
-  " Put the current visual selection in the " register
-  normal! ""gvy
-  let selection = getreg('"')
-
-  " Put the saved registers and clipboards back
-  call setreg('"', reg_save, regtype_save)
-  let &clipboard = cb_save
-
-  "Escape any special characters in the selection
-  let escaped_selection = EscapeString(selection)
-
-  return escaped_selection
-endfunction
-
-" Start the find and replace command across the entire file
-vmap <C-r> <Esc>:%s/<c-r>=GetVisual()<cr>/
-
-" Start with all folds open
-set foldlevelstart=100
-
-" omnicompletion
-set ofu=syntaxcomplete#Complete
-
-" ctags
-let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
-
-" Colors
-set t_Co=256
-colorscheme gruvbox
-set background=dark
-
-" Split in the right direction
-set splitbelow
-set splitright
-
-" Highlight the 80th column
 set colorcolumn=81
-
-" netrw stuff
-" let g:netrw_liststyle=2
-let g:netrw_browse_split=0
-let g:netrw_preview=0
-
-" Set gvim stuff
-if has("gui_running")
-	if has("gui_macvim")
-		:set guifont=Andale\ Mono:h14
-		colorscheme gruvbox
-		set background=dark
-		let g:netrw_browse_split=3
-	endif
-endif
 
 " line numbers
 function! NumberToggle()
-  if(&relativenumber == 1)
-    set norelativenumber
-  else
-    set relativenumber
-  endif
+	if(&relativenumber == 1)
+		set norelativenumber
+	else
+		set relativenumber
+	endif
 endfunc
-
 nnoremap <C-n> :call NumberToggle()<cr>
 
-set linebreak
+" switch color setup
+noremap <silent> <Leader>bd :set background=dark<CR>
+noremap <silent> <Leader>bl :set background=light<CR>
 
-" netrw from http://ivanbrennan.nyc/blog/2014/01/16/rigging-vims-netrw/
-fun! VexToggle(dir)
-  if exists("t:vex_buf_nr")
-    call VexClose()
-  else
-    call VexOpen(a:dir)
-  endif
-endf
+"
+" custom settings for some file types
+"
 
-fun! VexOpen(dir)
-  let g:netrw_browse_split=4    " open files in previous window
-  let g:netrw_banner=0          " no banner
-  let vex_width = 27
+" human text files
+autocmd BufNewFile,BufRead *.txt set filetype=human
+autocmd FileType mail,human set formatoptions+=t  textwidth=72 spell
+autocmd FileType human setlocal foldmethod=expr
+autocmd FileType human setlocal foldexpr=(getline(v:lnum)=~'^$')?-1:((indent(v:lnum)<indent(v:lnum+1))?('>'.indent(v:lnum+1)):indent(v:lnum))
+autocmd FileType human set foldtext=getline(v:foldstart)
+autocmd FileType human set fillchars=fold:\ 
 
-  exe "Vexplore " . a:dir
-  let t:vex_buf_nr = bufnr("%")
-  wincmd H
+" makefiles
+autocmd FileType make set noexpandtab shiftwidth=8
 
-  call VexSize(vex_width)
-endf
-
-fun! VexClose()
-  let cur_win_nr = winnr()
-  let target_nr = ( cur_win_nr == 1 ? winnr("#") : cur_win_nr )
-
-  1wincmd w
-  close
-  unlet t:vex_buf_nr
-
-  exe (target_nr - 1) . "wincmd w"
-  call NormalizeWidths()
-endf
-
-fun! VexSize(vex_width)
-  exe "vertical resize" . a:vex_width
-  set winfixwidth
-  call NormalizeWidths()
-endf
-
-fun! NormalizeWidths()
-  let eadir_pref = &eadirection
-  set eadirection=hor
-  set equalalways! equalalways!
-  let &eadirection = eadir_pref
-endf
-
-augroup NetrwGroup
-  autocmd! BufEnter * call NormalizeWidths()
-augroup END
-
-
-let g:netrw_liststyle=0         " thin (change to 3 for tree)
-let g:netrw_banner=0            " no banner
-let g:netrw_altv=1              " open files on right
-let g:netrw_preview=1           " open previews vertically
-
-
-noremap <Leader><Tab> :call VexToggle(getcwd())<CR>
-noremap <Leader>` :call VexToggle("")<CR>
-
-let g:xml_syntax_folding=1
-au FileType xml setlocal foldmethod=syntax
-
-set completeopt=longest,menuone
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-let g:jedi#completions_enabled = 0
-
-inoremap jk <Esc>
-nnoremap <leader>jd :YcmCompleter GoTo<CR>
-
+" markdown
+autocmd BufNewFile,BufRead *.markdown set filetype=markdown
+autocmd FileType markdown set formatoptions=tcroqn2 comments=n:&gt; ai textwidth=80 spell
 let g:markdown_fold_style = 'nested'
 
-set wildignorecase
-" Don't backup files in temp directories or shm
-if exists('&backupskip')
-    set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
+"
+" Set gvim stuff
+" 
+
+if has("gui_running")
+	if has("gui_macvim")
+		:set guifont=Andale\ Mono:h14
+		colorscheme solarized
+		set background=dark
+		set guioptions-=r
+		set guioptions-=R
+		set guioptions-=b
+		set guioptions-=l
+		set guioptions-=L
+	endif
 endif
-
-" Don't keep swap files in temp directories or shm
-if has('autocmd')
-    augroup swapskip
-        autocmd!
-        silent! autocmd BufNewFile,BufReadPre
-            \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
-            \ setlocal noswapfile
-    augroup END
-endif
-
-" Don't keep undo files in temp directories or shm
-if has('persistent_undo') && has('autocmd')
-    augroup undoskip
-        autocmd!
-        silent! autocmd BufWritePre
-            \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
-            \ setlocal noundofile
-    augroup END
-endif
-
-let g:ack_default_options = " -H --nocolor --nogroup --column "
-" Don't keep viminfo for files in temp directories or shm
-if has('viminfo')
-    if has('autocmd')
-        augroup viminfoskip
-            autocmd!
-            silent! autocmd BufNewFile,BufReadPre
-                \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
-                \ setlocal viminfo=
-        augroup END
-    endif
-endif
-
-autocmd User fugitive 
-  \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
-  \   nnoremap <buffer> .. :edit %:h<CR> |
-  \ endif
-
-autocmd BufReadPost fugitive://* set bufhidden=delete
-
-nnoremap <Right> <C-w>l
-nnoremap <Left> <C-w>h
-nnoremap <Up> <C-w>k
-nnoremap <Down> <C-w>j
-
-if exists('$TMUX')
-	set mouse=a
-endif
-
-fun VimGrepSubs()
-	lvimgrep /^sub.*{/ %
-	lopen
-endfun
-nnoremap <leader>fs :call VimGrepSubs()<CR>
-nnoremap <leader>fc :lclose<CR>
-
-autocmd BufEnter * :syntax sync fromstart
-
-noremap <silent> <Leader>vs :<C-u>let @z=&so<CR>:set so=0 noscb<CR>:bo vs<CR>Lkkkkkzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
