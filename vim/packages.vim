@@ -25,3 +25,8 @@ call minpac#add('Shougo/deoplete.nvim')
 call minpac#add('roxma/nvim-yarp')
 call minpac#add('roxma/vim-hug-neovim-rpc')
 call minpac#add('Shougo/neco-vim')
+
+call minpac#add('vim-syntastic/syntastic')
+
+call minpac#add('rust-lang/rust.vim')
+call minpac#add('racer-rust/vim-racer')

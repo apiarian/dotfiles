@@ -165,6 +165,12 @@ autocmd BufNewFile,BufRead *.markdown set filetype=markdown
 autocmd FileType markdown set formatoptions=tcroqn2 comments=n:&gt; ai textwidth=80 spell
 let g:markdown_fold_style = 'nested'
 
+" rust
+let g:rustfmt_autosave = 1
+let g:racer_cmd = '/Users/aleksandr/.cargo/bin/racer'
+let g:racer_experimental_completer = 1
+let g:syntastic_rust_checkers = ["rustc"]
+
 "
 " Set gvim stuff
 " 
