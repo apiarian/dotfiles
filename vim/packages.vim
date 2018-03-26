@@ -1,8 +1,15 @@
+let s:lockfile = $HOME . '/.vim/initial-packages-installed'
+let s:need_initial_install = !filereadable(s:lockfile)
+
 command! PackUpdate packadd minpac | source $MYVIMRC | redraw | call minpac#update()
 command! PackClean packadd minpac | source $MYVIMRC | call minpac#clean()
 
-if !exists('*minpac#init')
+if !exists('*minpac#init') && !s:need_initial_install
   finish
+endif
+
+if s:need_initial_install
+	packadd minpac
 endif
 
 call minpac#init()
@@ -30,3 +37,8 @@ call minpac#add('vim-syntastic/syntastic')
 
 call minpac#add('rust-lang/rust.vim')
 call minpac#add('racer-rust/vim-racer')
+
+if s:need_initial_install
+	call minpac#update()
+	call writefile([], s:lockfile)
+endif
