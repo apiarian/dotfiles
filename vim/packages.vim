@@ -19,6 +19,7 @@ call minpac#add('k-takata/minpac', {'type': 'opt'})
 call minpac#add('tpope/vim-fugitive')
 call minpac#add('tpope/vim-unimpaired')
 call minpac#add('tpope/vim-surround')
+call minpac#add('tpope/vim-sleuth')
 
 call minpac#add('jlanzarotta/bufexplorer')
 call minpac#add('kien/ctrlp.vim')
@@ -33,10 +34,16 @@ call minpac#add('roxma/nvim-yarp')
 call minpac#add('roxma/vim-hug-neovim-rpc')
 call minpac#add('Shougo/neco-vim')
 
-call minpac#add('vim-syntastic/syntastic')
+" call minpac#add('vim-syntastic/syntastic')
+call minpac#add('w0rp/ale')
 
 call minpac#add('rust-lang/rust.vim')
 call minpac#add('racer-rust/vim-racer')
+
+call minpac#add('fatih/vim-go')
+call minpac#add('zchee/deoplete-go')
+
+cal minpac#add('udalov/kotlin-vim')
 
 if s:need_initial_install
 	call minpac#update()
