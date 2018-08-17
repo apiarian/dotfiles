@@ -12,8 +12,13 @@ filetype plugin indent on
 " enable syntax in terminals which can display colors
 if has('syntax') && (&t_Co > 2)
 	syntax enable
-	let g:solarized_termcolors=16
-	colorscheme solarized
+	" let g:solarized_termcolors=0
+	" colorscheme solarized
+	let g:gruvbox_bold=0
+	let g:gruvbox_termcolors=16
+	let g:gruvbox_contrast_dark='medium'
+	let g:gruvbox_contrast_light='medium'
+	colorscheme gruvbox
 	set background=dark
 endif
 
@@ -45,8 +50,12 @@ set spelllang=en_us
 " reload files edited externally automatically
 set autoread
 
-" highlight search stuff
+" highlight search stuff and highlight as you type
 set hlsearch
+set incsearch
+
+" highlight current line
+set cursorline
 
 " hidden buffers hang around
 set hidden
@@ -65,7 +74,13 @@ set splitright
 set linebreak
 
 " completion
-set completeopt=longest,menuone
+set completeopt=menuone,noinsert,noselect,preview
+
+" let g:ycm_auto_trigger = 1
+" let g:ycm_min_num_of_chars_for_completion = 99
+" let g:ycm_min_num_identifier_candidate_chars = 99
+
+let g:completor_disable_buffer = 1
 
 "
 " handy bindings
@@ -94,12 +109,6 @@ inoremap <Up> <C-o>gk
  nnoremap <Up> <C-w>k
  nnoremap <Down> <C-w>j
 
-" move lines
-nmap mj ddp
-nmap mk dd<Up>P
-nmap mJ ddGp
-nmap mK ddggP
-
 " search next and center
 nnoremap n nzz
 nnoremap N Nzz
@@ -109,6 +118,34 @@ inoremap jk <Esc>
 
 " enable mouse
 set mouse=a
+if &term =~ '^screen'
+	" tmux knows the extended mode mouse
+	set ttymouse=xterm2
+endif
+
+" tmux navigator tweaks
+let g:tmux_navigator_disable_when_zoomed = 1
+
+" smooth scroling
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 6)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 6)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 10)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 10)<CR>
+
+nmap X "_d
+nmap XX "_dd
+vmap X "_d
+vmap x "_d
+
+nnoremap x "_x
+
+" add a way to swap characters back
+nmap <leader>s dlp
+
+
+" delete a word in insert mode
+inoremap <Esc><BS> <C-w>
+
 
 "
 " interface improvements
@@ -146,10 +183,37 @@ function! NumberToggle()
 	endif
 endfunc
 nnoremap <C-n> :call NumberToggle()<cr>
+set numberwidth=2
 
 " switch color setup
-noremap <silent> <Leader>bd :set background=dark<CR>
-noremap <silent> <Leader>bl :set background=light<CR>
+
+" Save temporary/backup files not in the local directory, but in your ~/.vim
+" directory, to keep them out of git repos. 
+" But first mkdir backup, swap, and undo first to make this work
+call system('mkdir ~/.vim')
+call system('mkdir ~/.vim/backup')
+call system('mkdir ~/.vim/swap')
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+
+" Keep undo history across sessions by storing it in a file
+if has('persistent_undo')
+	call system('mkdir ~/.vim/undo')
+	set undodir=~/.vim/undo//
+	set undofile
+	set undolevels=1000
+	set undoreload=10000
+endif
+
+" scratch window settings
+let g:scratch_horizontal = 0
+let g:scratch_top = 0
+let g:scratch_width = 25.1
+let g:scratch_insert_autohide = 0
+
+" reload vimrc
+nnoremap <Leader>sv :source ~/.vimrc<cr>
+
 
 "
 " custom settings for some file types
@@ -170,6 +234,10 @@ autocmd FileType make set noexpandtab shiftwidth=8
 autocmd BufNewFile,BufRead *.markdown set filetype=markdown
 autocmd FileType markdown set formatoptions=tcroqn2 comments=n:&gt; ai textwidth=80 spell
 let g:markdown_fold_style = 'nested'
+" if no filetype specified, set ft=markdown (alternative would be text)
+autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'json']
+
 
 " rust
 let g:rustfmt_autosave = 1
@@ -178,8 +246,7 @@ let g:racer_experimental_completer = 1
 " let g:syntastic_rust_checkers = ["rustc"]
 
 " go
-
-let g:go_bin_path=expand("$HOME/.vim/gopath")
+let g:go_bin_path=expand("$HOME/.vim/gopath/")
 autocmd FileType go setlocal foldmethod=syntax
 function! s:build_go_files()
         let l:file = expand('%')
@@ -190,6 +257,7 @@ function! s:build_go_files()
         endif
 endfunction
 let g:go_fmt_command = "goimports"
+let g:go_info_mode = 'gocode'
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
@@ -199,12 +267,9 @@ let g:go_highlight_build_constraints = 1
 let g:go_fmt_fail_silently = 0
 let g:go_fmt_experimental = 1
 let g:go_list_type = "quickfix"
-let g:go_auto_type_info = 1
+let g:go_auto_type_info = 0
 let g:go_updatetime = 500
-" let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-" let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
+let g:go_jump_to_error = 0 " it's broken for things like testify/assert
 au FileType go nmap <leader>r <Plug>(go-run)
 au FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
 au FileType go nmap <leader>t <Plug>(go-test)
@@ -213,6 +278,7 @@ au FileType go nmap <leader>tc <Plug>(go-test-compile)
 au FileType go nmap <leader>c <Plug>(go-coverage-toggle)
 au FileType go nmap <leader>v <Plug>(go-vet)
 au FileType go nmap <leader>l :GoLint<CR>
+au FileType go nmap <leader>dx <Plug>(go-def)
 au FileType go nmap <leader>ds <Plug>(go-def-split)
 au FileType go nmap <leader>dv <Plug>(go-def-vertical)
 au FileType go nmap <leader>dt <Plug>(go-def-tab)
@@ -226,7 +292,17 @@ au FileType go nmap <leader>as <Plug>(go-alternate-split)
 au FileType go nmap <leader>i <Plug>(go-info)
 set autowrite " write before GoBuild and the like
 let g:ctrlp_custom_ignore = '\v([\/]\.(git|hg|svn)$)|([\/]vendor/.*)'
-let g:deoplete#sources#go#gocode_binary = expand("$HOME/.vim/gopath/gocode")
+au FileType go inoremap <C-d> <Esc>:GoDoc<CR><C-w><C-p>a
+let g:ale_linters = {'go': ['gometalinter', 'gofmt']}
+let g:ale_go_gometalinter_options = '--disable-all --enable=golint --enable=vetshadow --enable=vet --concurrency=4'
+
+" python
+let g:pyindent_open_paren = '&sw'
+let g:pyindent_nested_paren = '&sw'
+let g:pyindent_continue = '&sw'
+
+" json
+au FileType json setlocal foldmethod=syntax
 
 "
 " Set gvim stuff
@@ -235,7 +311,7 @@ let g:deoplete#sources#go#gocode_binary = expand("$HOME/.vim/gopath/gocode")
 if has("gui_running")
 	if has("gui_macvim")
 		:set guifont=Andale\ Mono:h14
-		colorscheme solarized
+		colorscheme gruvbox
 		set background=dark
 		set guioptions-=r
 		set guioptions-=R
