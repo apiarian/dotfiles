@@ -1,11 +1,13 @@
 if [[ `uname` == 'Darwin' ]]; then
-	export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+	export PATH="/usr/local/bin:/usr/local/sbin:/$HOME/bin:$PATH"
 	export MANPATH="$MANPATH:/usr/local/man"
 
 	alias lyrics='slyrics;elyrics'
 	alias plyrics="osascript $HOME/development/Applescript/lyrics.scpt | tr \"#\" \"\n\""
 
 	alias clear="clear; perl -e 'my %c=(fortune => 9,moondata => 3);\$t=0;(\$t+=\$_) for values %c;my \$r=rand(\$t);my \$s=0;for (keys %c){\$s+= \$c{\$_};if(\$r<\$s){exec \$_;last;}}'"
+
+	alias new-alacritty='open -n -a /Applications/Alacritty.app'
 
 	cdf () {
 		currFolderPath=$( /usr/bin/osascript <<EOT

@@ -11,3 +11,5 @@ if hash brew 2>/dev/null; then
 		source "$f";
 	done
 fi
+
+export PATH="$HOME/.cargo/bin:$PATH"
