@@ -1,3 +1,6 @@
+export CC="/usr/bin/clang"
+export GOPATH="$HOME/code/go"
+export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
 if [[ `uname` == 'Darwin' ]]; then
 	export PATH="/usr/local/bin:/usr/local/sbin:/$HOME/bin:$PATH"
 	export MANPATH="$MANPATH:/usr/local/man"
@@ -27,7 +30,7 @@ EOT
 
   manpdf () { man -t "$1" | open -f -a /Applications/Preview.app/; }
 
-  export CC="xcrun clang"
+  #export CC="xcrun clang"
   export CXX="xcrun clang++"
   export OBJC="xcrun clang"
 fi
@@ -104,7 +107,7 @@ On_IBlue='\[\e[0;104m\]'    # Blue
 On_IPurple='\[\e[10;95m\]'  # Purple
 On_ICyan='\[\e[0;106m\]'    # Cyan
 On_IWhite='\[\e[0;107m\]'   # White
-export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`git branch 2>/dev/null|grep -e ^*|sed -e 's/* \\(.*\\)/\\git:\\1\\ /'\`${BS}\`if [[ -z \"\\\`git status -z 2>/dev/null\\\`\" ]]; then echo ''; else echo -n '*'; fi\` $VIMTERM`[[ $IPFS_PATH ]] && echo "ipfs:$IPFS_PATH" | sed "s|$HOME|~|"`${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
+export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`git branch 2>/dev/null|grep -e ^*|sed -e 's/* \\(.*\\)/\\git:\\1\\ /'\`${BS}\`if [[ -z \"\\\`git status --porcelain=1 2>/dev/null|tr -d '\n'\\\`\" ]]; then echo ''; else echo -n '*'; fi\` $VIMTERM`[[ $IPFS_PATH ]] && echo "ipfs:$IPFS_PATH" | sed "s|$HOME|~|"`${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
 export PS2="${Yellow}) ${Color_Off}"
 
 shopt -s histappend
@@ -139,10 +142,26 @@ alias rot13="tr a-zA-Z n-za-mN-ZA-M"
 
 function anybar { echo -n $1 | nc -4u -w0 localhost ${2:-1738}; }
 
-cd () { builtin cd "$1"; ls; }
+# cd () { builtin cd "$1"; ls; }
 
 mkcd () {
     mkdir -p "$*"
     cd "$*"
 }
 
+SSH_ENV="$HOME/.ssh/environment"
+function start_agent() {
+  touch $SSH_ENV
+  chmod 0600 $SSH_ENV
+  /usr/bin/ssh-agent | sed 's/^echo/#echo/' > $SSH_ENV
+  . $SSH_ENV > /dev/null
+  /usr/bin/ssh-add
+}
+if [ -f $SSH_ENV ]; then
+  . $SSH_ENV > /dev/null
+  ps -p $SSH_AGENT_PID > /dev/null || {
+    start_agent;
+  }
+else
+  start_agent;
+fi

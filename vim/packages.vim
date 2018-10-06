@@ -26,27 +26,33 @@ call minpac#add('tpope/vim-markdown')
 
 call minpac#add('vim-scripts/BufOnly.vim')
 
+call minpac#add('Raimondi/delimitMate')
+
 call minpac#add('matze/vim-move')
 call minpac#add('wesQ3/vim-windowswap')
 
 call minpac#add('terryma/vim-smooth-scroll')
 
+" navigation
 call minpac#add('jlanzarotta/bufexplorer')
 call minpac#add('kien/ctrlp.vim')
 call minpac#add('nazo/pt.vim')
 
 call minpac#add('jamessan/vim-gnupg')
 
+" colors
 call minpac#add('altercation/vim-colors-solarized')
 call minpac#add('morhetz/gruvbox')
 
-call minpac#add('maralla/completor.vim')
+" call minpac#add('maralla/completor.vim')
 
 call minpac#add('w0rp/ale')
 
+" rust
 call minpac#add('rust-lang/rust.vim')
 call minpac#add('racer-rust/vim-racer')
 
+" go
 call minpac#add('fatih/vim-go')
 call minpac#add('garyburd/go-explorer')
 
@@ -57,6 +63,17 @@ call minpac#add('christoomey/vim-tmux-navigator')
 call minpac#add('elzr/vim-json')
 
 call minpac#add('mtth/scratch.vim')
+
+" clojure
+call minpac#add('tpope/vim-sexp-mappings-for-regular-people')
+call minpac#add('guns/vim-sexp')
+call minpac#add('guns/vim-clojure-static')
+call minpac#add('guns/vim-clojure-highlight')
+call minpac#add('tpope/vim-fireplace')
+call minpac#add('tpope/vim-salve')
+call minpac#add('tpope/vim-projectionist')
+call minpac#add('tpope/vim-dispatch')
+call minpac#add('venantius/vim-cljfmt')
 
 if s:need_initial_install
 	call minpac#update()
