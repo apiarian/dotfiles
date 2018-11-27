@@ -1,0 +1,22 @@
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[user]
+	name = Aleksandr Pasechnik
+	email = al@megamicron.net
+[push]
+	default = current
+[color]
+	status = true
+	diff = true
+	ui = true
+[log]
+	decorate = true
+	graph = true
+[rerere]
+	enabled = true
+[merge]
+	tool = vimdiff
+[alias]
+	boop = "!f() { B=$(git rev-parse --abbrev-ref HEAD); git commit --allow-empty -m 'Boop!'; git push origin $B; }; f"
