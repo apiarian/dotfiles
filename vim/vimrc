@@ -129,6 +129,15 @@ endif
 " tmux navigator tweaks
 let g:tmux_navigator_disable_when_zoomed = 1
 
+" smooth scroling
+" noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 12)<CR>
+" noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 12)<CR>
+" noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 20)<CR>
+" noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 20)<CR>
+
+" add a way to swap characters back
+map <leader>s dlp
+
 
 " delete a word in insert mode
 inoremap <Esc><BS> <C-w>
@@ -286,7 +295,7 @@ set autowrite " write before GoBuild and the like
 let g:ctrlp_custom_ignore = '\v([\/]\.(git|hg|svn)$)|([\/]vendor/.*)'
 au FileType go inoremap <C-d> <Esc>:GoDoc<CR><C-w><C-p>a
 let g:ale_linters = {'go': ['gometalinter', 'gofmt']}
-let g:ale_go_gometalinter_options = '--disable-all --enable=golint --enable=vetshadow --enable=vet --concurrency=4'
+let g:ale_go_gometalinter_options = '--disable-all --enable=golint --enable=vetshadow --enable=vet --enable=unparam --concurrency=4'
 
 " python
 let g:pyindent_open_paren = '&sw'
@@ -297,7 +306,7 @@ let g:pyindent_continue = '&sw'
 au FileType json setlocal foldmethod=syntax
 
 " clojure
-au FileType clojure let b:delimitMate_quotes = "\" ``"
+au FileType clojure let b:delimitMate_quotes = "\" `"
 
 "
 " Set gvim stuff
