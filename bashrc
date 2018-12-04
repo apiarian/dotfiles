@@ -107,7 +107,15 @@ On_IBlue='\[\e[0;104m\]'    # Blue
 On_IPurple='\[\e[10;95m\]'  # Purple
 On_ICyan='\[\e[0;106m\]'    # Cyan
 On_IWhite='\[\e[0;107m\]'   # White
-export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`git branch 2>/dev/null|grep -e ^*|sed -e 's/* \\(.*\\)/\\git:\\1\\ /'\`${BS}\`if [[ -z \"\\\`git status --porcelain=1 2>/dev/null|tr -d '\n'\\\`\" ]]; then echo ''; else echo -n '*'; fi\` $VIMTERM`[[ $IPFS_PATH ]] && echo "ipfs:$IPFS_PATH" | sed "s|$HOME|~|"`${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
+
+function gitPSpart() {
+  s=`git status --porcelain=2 --branch 2>&1`;
+  if [[ $? -ne 0 ]]; then return; fi;
+  echo "$s" | grep '# branch.head .*' | sed 's/# branch.head //' | tr  '\n' ' ';
+  if [[ `echo "$s" | grep -vc '#.*'` -ne 0  ]]; then echo -n '*'; fi;
+}
+
+export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`gitPSpart\` $VIMTERM``${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
 export PS2="${Yellow}) ${Color_Off}"
 
 shopt -s histappend
