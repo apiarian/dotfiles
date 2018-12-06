@@ -35,8 +35,11 @@ call minpac#add('terryma/vim-smooth-scroll')
 
 " navigation
 call minpac#add('jlanzarotta/bufexplorer')
-call minpac#add('kien/ctrlp.vim')
+" call minpac#add('kien/ctrlp.vim')
 call minpac#add('nazo/pt.vim')
+
+" there's also an extra step in the vimrc file for fzf
+call minpac#add('junegunn/fzf.vim')
 
 call minpac#add('jamessan/vim-gnupg')
 
@@ -54,7 +57,7 @@ call minpac#add('racer-rust/vim-racer')
 
 " go
 call minpac#add('fatih/vim-go')
-call minpac#add('garyburd/go-explorer')
+" call minpac#add('garyburd/go-explorer')
 
 call minpac#add('udalov/kotlin-vim')
 
