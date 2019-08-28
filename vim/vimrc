@@ -2,7 +2,7 @@ let $PATH = $HOME . '/.vim/gopath:' . $PATH
 
 source ~/.vim/packages.vim
 
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 
 set nocompatible
 
@@ -14,11 +14,12 @@ if has('syntax') && (&t_Co > 2)
 	syntax enable
 	" let g:solarized_termcolors=0
 	" colorscheme solarized
-	let g:gruvbox_bold=0
-	let g:gruvbox_termcolors=256
-	let g:gruvbox_contrast_dark='medium'
-	let g:gruvbox_contrast_light='medium'
-	colorscheme gruvbox
+	" let g:gruvbox_bold=0
+	" let g:gruvbox_termcolors=256
+	" let g:gruvbox_contrast_dark='medium'
+	" let g:gruvbox_contrast_light='medium'
+	" colorscheme gruvbox
+	colorscheme paramount
 	set background=dark
 endif
 
@@ -63,8 +64,8 @@ set hidden
 " let embedded terminals know that they're embedded
 let $VIMTERM = '(vim)'
 
-" start with all folds open
-set foldlevelstart=100
+" start with top-level folds open
+set foldlevelstart=1
 
 " split in the right direction
 set splitbelow
@@ -89,8 +90,8 @@ let delimitMate_expand_space = 1
 " handy bindings
 "
 
-" space to insert a character
-nmap <Space> i_<Esc>r
+" space to toggle folds
+nmap <Space> za
 
 " Y to yank to the end of the line from the cursor
 map Y y%
@@ -106,11 +107,9 @@ vnoremap k gk
 inoremap <Down> <C-o>gj
 inoremap <Up> <C-o>gk
 
-" jump around windows
-nnoremap <Right> <C-w>l
-nnoremap <Left> <C-w>h
-nnoremap <Up> <C-w>k
-nnoremap <Down> <C-w>j
+" scroll the view
+nnoremap <Up> <C-y>
+nnoremap <Down> <C-e>
 
 " search next and center
 nnoremap n nzz
@@ -142,9 +141,6 @@ let g:tmux_navigator_disable_when_zoomed = 1
 " noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 20)<CR>
 " noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 20)<CR>
 
-" add a way to swap characters back
-map <leader>s dlp
-
 
 " delete a word in insert mode
 inoremap <Esc><BS> <C-w>
@@ -154,6 +150,9 @@ nnoremap ,, A,<Esc>
 
 " center the screen in insert mode
 inoremap <c-z> <c-o>zz
+
+" Resize panes when window/terminal gets resize
+autocmd VimResized * :wincmd =
 
 "
 " interface improvements
@@ -173,7 +172,9 @@ autocmd WinEnter * :call ToggleWindowSize()
 
 " status line
 set laststatus=2
-set statusline=%F%m%r%{fugitive#statusline()}%h%w\%=%y[L:\%l\ C:\%c\ A:\%b\ H:\x%02B\ P:\%p%%]
+set statusline=%F%m%r%h%w\%=%y[L:\%l\ C:\%c\ A:\%b\ H:\x%02B\ P:\%p%%]
+au InsertEnter * hi StatusLine term=bold cterm=bold ctermbg=9
+au InsertLeave * hi StatusLine term=bold,reverse ctermbg=236
 
 " show invisibles
 
@@ -219,6 +220,8 @@ let g:scratch_top = 0
 let g:scratch_width = 25.1
 let g:scratch_insert_autohide = 0
 
+nnoremap <C-w>z :resize<cr>:vertical resize<cr>
+
 " reload vimrc
 nnoremap <Leader>sv :source ~/.vimrc<cr>
 
@@ -231,6 +234,20 @@ runtime plugin/fzf.vim
 nmap ; :Buffers<CR>
 nmap <Leader>t :Files<CR>
 nmap <Leader>r :Tags<CR>
+let $FZF_DEFAULT_COMMAND = 'pt --hidden --ignore .git --ignore \*.pyc -l -g ""'
+
+" ALE
+let g:ale_sign_warning = '▲'
+let g:ale_sign_error = '✗'
+highlight link ALEWarningSign String
+highlight link ALEErrorSign Title
+nmap ]w :ALENextWrap<CR>
+nmap [w :ALEPreviousWrap<CR>
+nmap <Leader>f <Plug>(ale_fix)
+augroup VimDiff
+  autocmd!
+  autocmd VimEnter,FilterWritePre * if &diff | ALEDisable | endif
+augroup END
 
 "
 " custom settings for some file types
@@ -254,6 +271,15 @@ let g:markdown_fold_style = 'nested'
 " if no filetype specified, set ft=markdown (alternative would be text)
 autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
 let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'json']
+
+
+" vim-test
+let g:test#strategy = "vimterminal"
+let g:test#enabled_runners = ["python#pytest"]
+let g:test#python#pytest#options = "--verbose --failed-first"
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-l> :TestLast<CR>
 
 
 " rust
@@ -317,6 +343,23 @@ let g:ale_go_gometalinter_options = '--disable-all --enable=golint --enable=vets
 let g:pyindent_open_paren = '&sw'
 let g:pyindent_nested_paren = '&sw'
 let g:pyindent_continue = '&sw'
+let g:jedi#completions_enabled = 0
+let g:jedi#smart_auto_mappings = 0
+au FileType python let b:delimitMate_nesting_quotes = ['"']
+set wildignore+='*.pyc'
+let g:SimpylFold_docstring_preview = 1
+let g:SimpylFold_fold_docstring = 0
+
+function! ForceJediSplit()
+	let l:original = g:jedi#use_splits_not_buffers
+
+	let g:jedi#use_splits_not_buffers = 'winwidth'
+	call jedi#goto()
+	let g:jedi#use_splits_not_buffers = l:original
+endfunction
+au FileType python nmap <leader>s :call ForceJediSplit() <CR>
+au FileType python nmap <leader>b :Black<CR>
+let g:ale_fixers = {'python': ['isort']}
 
 " json
 au FileType json setlocal foldmethod=syntax
@@ -340,3 +383,22 @@ if has("gui_running")
 		set guioptions-=L
 	endif
 endif
+
+"
+" flatiron
+"
+
+" flatiron repo
+for repo in ["flatiron", "wario-workflows", "data-locator"]
+  let s:repo_python = "/Users/apasechnik/code/" . repo . "*.py"
+  for part in ["let b:ale_python_flake8_options = '--max-line-length=120'", "set colorcolumn=121 textwidth=120", "let g:black_linelength = 120"]
+    let s:full_command = "autocmd BufEnter,BufNewFile,BufRead " . s:repo_python . " " . part
+    execute s:full_command
+  endfor
+endfor
+autocmd BufEnter,BufNewFile,BufRead /Users/apasechnik/code/flatiron/*.py let test#python#pytest#executable = '/Users/apasechnik/code/flatiron/bin/pyte'
+
+nnoremap <leader>pt :Dispatch ctags -R --languages=python .<CR>
+let g:netrw_list_hide = ',^\.\.\=/\=$,\(^\|\s\s\)\zs\.\S\+,.*\.pyc$'
+autocmd BufEnter,BufNewFile,BufRead /Users/apasechnik/code/flatiron/blocks/*.meta set ft=meta
+autocmd BufWritePre /Users/apasechnik/code/flatiron/sadl/*.py execute ':Black'

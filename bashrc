@@ -114,8 +114,11 @@ function gitPSpart() {
   echo "$s" | grep '# branch.head .*' | sed 's/# branch.head //' | tr  '\n' ' ';
   if [[ `echo "$s" | grep -vc '#.*'` -ne 0  ]]; then echo -n '*'; fi;
 }
+function gitBranch() {
+  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+}
 
-export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`gitPSpart\` $VIMTERM``${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
+export PS1="${Red}[${Green} \t ${Red}] ${Cyan}\u${Red}@${Cyan}\h${Red}: ${Yellow}\w ${Green}\`gitBranch\` $VIMTERM``${Cyan}\`if [[ -z \"\\\`jobs\\\`\" ]]; then echo ''; else echo -n {; jobs|awk '{print \$3}'|tr '\n' ' '|xargs echo -n; echo -n }; fi\`\n${Color_Off}"
 export PS2="${Yellow}) ${Color_Off}"
 
 shopt -s histappend
@@ -147,6 +150,11 @@ alias gitc='git commit -v'
 alias gitp='git push origin master'
 alias passphrase='xkcdpass --min=4 --max=7 --numwords=5 --count=5'
 alias rot13="tr a-zA-Z n-za-mN-ZA-M"
+alias :q="exit"
+alias psqlservices="less ~/.pg_service.conf | grep -e '\[.*\]' | sed -E 's/\[(.*)]/\1/' | sort"
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
 function anybar { echo -n $1 | nc -4u -w0 localhost ${2:-1738}; }
 
@@ -173,3 +181,5 @@ if [ -f $SSH_ENV ]; then
 else
   start_agent;
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

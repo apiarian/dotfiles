@@ -2,10 +2,5 @@ if [ -f ~/.bashrc ]; then
 	source ~/.bashrc
 fi
 
-if hash brew 2>/dev/null; then
-	if [ -f /usr/local/share/bash-completion/bash_completion ]; then
-		. /usr/local/share/bash-completion/bash_completion
-	fi
-fi
-
-export PATH="$HOME/.cargo/bin:$PATH"
+export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh"  ]] && .  "/usr/local/etc/profile.d/bash_completion.sh"

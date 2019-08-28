@@ -35,8 +35,8 @@ call minpac#add('terryma/vim-smooth-scroll')
 
 " navigation
 call minpac#add('jlanzarotta/bufexplorer')
-" call minpac#add('kien/ctrlp.vim')
 call minpac#add('nazo/pt.vim')
+call minpac#add('Konfekt/FastFold')
 
 " there's also an extra step in the vimrc file for fzf
 call minpac#add('junegunn/fzf.vim')
@@ -46,10 +46,17 @@ call minpac#add('jamessan/vim-gnupg')
 " colors
 call minpac#add('altercation/vim-colors-solarized')
 call minpac#add('morhetz/gruvbox')
+call minpac#add('apiarian/vim-colors-paramount')
+call minpac#add('andreasvc/vim-256noir')
 
 " call minpac#add('maralla/completor.vim')
 
 call minpac#add('w0rp/ale')
+call minpac#add('janko/vim-test')
+
+" life planning
+
+call minpac#add('dbeniamine/todo.txt-vim')
 
 " rust
 call minpac#add('rust-lang/rust.vim')
@@ -77,6 +84,17 @@ call minpac#add('tpope/vim-salve')
 call minpac#add('tpope/vim-projectionist')
 call minpac#add('tpope/vim-dispatch')
 call minpac#add('venantius/vim-cljfmt')
+
+" python
+call minpac#add('davidhalter/jedi-vim')
+call minpac#add('python/black')
+call minpac#add('tmhedberg/SimpylFold')
+
+" csv
+call minpac#add('chrisbra/csv.vim')
+
+" yaml
+call minpac#add('pedrohdz/vim-yaml-folds')
 
 if s:need_initial_install
 	call minpac#update()
