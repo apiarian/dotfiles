@@ -35,8 +35,8 @@ call minpac#add('terryma/vim-smooth-scroll')
 
 " navigation
 call minpac#add('jlanzarotta/bufexplorer')
-call minpac#add('nazo/pt.vim')
 call minpac#add('Konfekt/FastFold')
+call minpac#add('jremmen/vim-ripgrep')
 
 " there's also an extra step in the vimrc file for fzf
 call minpac#add('junegunn/fzf.vim')

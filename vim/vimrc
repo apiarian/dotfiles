@@ -234,7 +234,7 @@ runtime plugin/fzf.vim
 nmap ; :Buffers<CR>
 nmap <Leader>t :Files<CR>
 nmap <Leader>r :Tags<CR>
-let $FZF_DEFAULT_COMMAND = 'pt --hidden --ignore .git --ignore \*.pyc -l -g ""'
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 
 " ALE
 let g:ale_sign_warning = '▲'
@@ -384,9 +384,16 @@ if has("gui_running")
 	endif
 endif
 
+" csv
+au FileType csv nmap <leader>a :%CSVArrangeColumn!<CR>
+au FileType csv nmap <leader>u :%CSVUnArrangeColumn<CR>
+
 "
 " flatiron
 "
+
+let g:ale_virtualenv_dir_names = ["env", "env3"]
+let g:ale_virtualenv_dir_names = ["env3", "env"]
 
 " flatiron repo
 for repo in ["flatiron", "wario-workflows", "data-locator"]

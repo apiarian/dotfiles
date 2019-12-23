@@ -24,9 +24,12 @@
 [merge]
 	tool = vimdiff
 [alias]
-	boop = "!f() { B=$(git rev-parse --abbrev-ref HEAD); git commit --allow-empty -m 'Boop!'; git push origin $B; }; f"
+	boop = "!f() { B=$(git rev-parse --abbrev-ref HEAD); git commit --allow-empty -m \"Boop!\"; git push origin $B; }; f"
 	ff = merge -ff-only
 	list = log --color --graph --pretty=format:'%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Cgreen%d%Creset' --abbrev-commit
 	last = log -1
+	cof = !git for-each-ref --format='%(refname:short)' refs/remotes/origin refs/heads | fzf | xargs git checkout
 [format]
 	pretty = format:%C(auto)Hash:   %H%d%nAuthor: %Cgreen%an <%ae>%nDate:   %ad%nCommit: %cd (by %cn <%ce>)%n%n%w(80,2,4)%Cblue%s%n%+b
+[protocol]
+	version = 2
