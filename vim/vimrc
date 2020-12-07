@@ -360,6 +360,14 @@ endfunction
 au FileType python nmap <leader>s :call ForceJediSplit() <CR>
 au FileType python nmap <leader>b :Black<CR>
 let g:ale_fixers = {'python': ['isort']}
+au FileType python setlocal formatoptions-=t colorcolumn=89
+
+function! ImportSplit()
+  :leftabove 10split
+  :0
+endfunction
+au FileType python nmap <leader>i :call ImportSplit() <CR>
+
 
 " json
 au FileType json setlocal foldmethod=syntax
