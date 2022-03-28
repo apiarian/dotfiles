@@ -361,6 +361,7 @@ au FileType python nmap <leader>s :call ForceJediSplit() <CR>
 au FileType python nmap <leader>b :Black<CR>
 let g:ale_fixers = {'python': ['isort']}
 au FileType python setlocal formatoptions-=t colorcolumn=89
+au FileType python setlocal formatoptions-=t
 
 function! ImportSplit()
   :leftabove 10split
@@ -381,8 +382,8 @@ au FileType clojure let b:delimitMate_quotes = "\" `"
 
 if has("gui_running")
 	if has("gui_macvim")
-		:set guifont=Andale\ Mono:h14
-		colorscheme gruvbox
+		:set guifont=Fira\ Code:h14
+		colorscheme paramount
 		set background=dark
 		set guioptions-=r
 		set guioptions-=R
@@ -412,6 +413,13 @@ for repo in ["flatiron", "wario-workflows", "data-locator"]
   endfor
 endfor
 autocmd BufEnter,BufNewFile,BufRead /Users/apasechnik/code/flatiron/*.py let test#python#pytest#executable = '/Users/apasechnik/code/flatiron/bin/pyte'
+for repo in ["qreed", "academic-document-processing"]
+  let s:repo_python = "/Users/apasechnik/code/" . repo . "/*.py"
+  for part in ["let b:ale_python_flake8_options = '--max-line-length=88'", "set colorcolumn=89 textwidth=88", "let g:black_linelength=88"]
+    let s:full_command = "autocmd BufEnter,BufNewFile,BufRead " . s:repo_python . " " . part
+    execute s:full_command
+  endfor
+endfor
 
 nnoremap <leader>pt :Dispatch ctags -R --languages=python .<CR>
 let g:netrw_list_hide = ',^\.\.\=/\=$,\(^\|\s\s\)\zs\.\S\+,.*\.pyc$'

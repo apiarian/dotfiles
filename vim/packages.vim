@@ -87,7 +87,7 @@ call minpac#add('venantius/vim-cljfmt')
 
 " python
 call minpac#add('davidhalter/jedi-vim')
-call minpac#add('python/black')
+" call minpac#add('psf/black')
 call minpac#add('tmhedberg/SimpylFold')
 
 " csv
