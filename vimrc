@@ -243,4 +243,3 @@ for repo in ["qreed", "academic-document-processing"]
 endfor
 
 autocmd BufEnter,BufNewFile,BufRead /Users/apasechnik/code/flatiron/blocks/*.meta set ft=meta
-autocmd BufWritePre /Users/apasechnik/code/flatiron/sadl/*.py execute ':Black'
