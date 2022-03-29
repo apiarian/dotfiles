@@ -24,6 +24,8 @@ call plug#begin()
 	Plug 'chrisbra/csv.vim'
 
 	Plug 'christoomey/vim-tmux-navigator'
+	Plug 'HerringtonDarkholme/yats'
+	Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
 
 set nocompatible
