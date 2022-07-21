@@ -237,6 +237,8 @@ endfunction
 nmap <leader>i :call ImportSplit() <CR>
 
 
+let g:tmux_navigator_disable_when_zommed = 1
+
 " json
 au FileType json setlocal foldmethod=syntax
 
