@@ -18,15 +18,18 @@ call plug#begin()
 	Plug 'junegunn/fzf.vim'
 	Plug 'elzr/vim-json'
 	Plug 'jremmen/vim-ripgrep'
+	Plug 'guns/xterm-color-table.vim'
 
-	Plug 'vimwiki/vimwiki'
-	Plug 'w0rp/ale'
+	Plug 'dense-analysis/ale'
 	Plug 'chrisbra/csv.vim'
 
 	Plug 'christoomey/vim-tmux-navigator'
 	Plug 'HerringtonDarkholme/yats'
 	Plug 'MaxMEllon/vim-jsx-pretty'
+	Plug 'davidhalter/jedi-vim'
+	Plug 'python-rope/ropevim'
 call plug#end()
+
 
 set nocompatible
 
@@ -59,6 +62,9 @@ set smartindent
 
 " don't reformat text automatically
 set formatoptions-=t
+set linebreak
+
+set textwidth=79
 
 " spelling
 set spelllang=en_us
@@ -75,6 +81,9 @@ set cursorline
 
 " hidden buffers hang around
 set hidden
+
+" start with top-level folds open
+set foldlevelstart=1
 
 " split in the right direction
 set splitbelow
@@ -148,14 +157,18 @@ autocmd WinEnter * :call ToggleWindowSize()
 
 " status line
 set laststatus=2
+hi StatusLine term=bold,reverse ctermbg=22
+hi StatusLineNC term=bold,reverse ctermbg=53
 set statusline=%F%m%r%h%w\%=%y[L:\%l\ C:\%c\ A:\%b\ H:\x%02B\ P:\%p%%]
 au InsertEnter * hi StatusLine term=bold cterm=bold ctermbg=9
-au InsertLeave * hi StatusLine term=bold,reverse ctermbg=236
+au InsertLeave * hi StatusLine term=bold,reverse ctermbg=22
 
 " show invisibles
 
 set list
 set listchars=tab:▸\ ,eol:¬
+
+set colorcolumn=81
 
 " line numbers
 function! NumberToggle()
@@ -187,9 +200,12 @@ if has('persistent_undo')
 endif
 
 " fzf stuff
+" set runtimepath+=/usr/local/opt/fzf
+" runtime plugin/fzf.vim
 nmap ; :Buffers<CR>
 nmap <Leader>t :Files<CR>
 nmap <Leader>r :Tags<CR>
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 
 " ALE
 let g:ale_sign_warning = '▲'
@@ -205,10 +221,14 @@ augroup VimDiff
 augroup END
 let g:ale_fixers = {'python': ['isort']}
 
+" python
+let g:jedi#completions_enabled = 0
+let g:jedi#smart_auto_mappings = 0
 set wildignore+='*.pyc'
 let g:netrw_list_hide = ',^\.\.\=/\=$,\(^\|\s\s\)\zs\.\S\+,.*\.pyc$'
 
-let g:vimwiki_list = [{'path': '~/notes', 'syntax': 'default', 'ext': '.md'}]
+let g:ale_fixers = {'python': ['isort']}
+au FileType python setlocal formatoptions-=t
 
 function! ImportSplit()
   :leftabove 10split
@@ -216,7 +236,10 @@ function! ImportSplit()
 endfunction
 nmap <leader>i :call ImportSplit() <CR>
 
-let g:tmux_navigator_disable_when_zommed = 1
+
+" json
+au FileType json setlocal foldmethod=syntax
+
 
 "
 " flatiron

@@ -1,14 +1,17 @@
+export PROMPT_COMMAND='history -a'
 export CC="/usr/bin/clang"
 export GOPATH="$HOME/code/go"
 export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
+export VAUL_ADDR="https://vault.prod.flatiron.io"
+export AWS_PROFILE="mba-foundrybolt"
+# make lifesci_portal_v2 scripts work
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 if [[ `uname` == 'Darwin' ]]; then
 	export PATH="/usr/local/bin:/usr/local/sbin:/$HOME/bin:$PATH"
 	export MANPATH="$MANPATH:/usr/local/man"
 
 	alias lyrics='slyrics;elyrics'
 	alias plyrics="osascript $HOME/development/Applescript/lyrics.scpt | tr \"#\" \"\n\""
-
-	alias clear="clear; perl -e 'my %c=(fortune => 9,moondata => 3);\$t=0;(\$t+=\$_) for values %c;my \$r=rand(\$t);my \$s=0;for (keys %c){\$s+= \$c{\$_};if(\$r<\$s){exec \$_;last;}}'"
 
 	alias new-alacritty='open -n -a /Applications/Alacritty.app'
 
@@ -155,6 +158,8 @@ alias psqlservices="less ~/.pg_service.conf | grep -e '\[.*\]' | sed -E 's/\[(.*
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
+alias activate-env-3="source ~/code/env3/bin/activate"
+alias start_postgres='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
 
 function anybar { echo -n $1 | nc -4u -w0 localhost ${2:-1738}; }
 
@@ -181,5 +186,27 @@ if [ -f $SSH_ENV ]; then
 else
   start_agent;
 fi
+
+preexec() {
+  commandwas="$1"
+  commandstarted=`date +%s`
+}
+
+precmd() {
+  if [ -z ${commandwas+x} ]; then
+    return;
+  fi
+
+  currenttime=`date +%s`
+  elapsed=$((currenttime - commandstarted))
+  if (( elapsed < 30 )); then
+    return;
+  fi
+
+  osascript -e "display notification \"ran in ${elapsed}s: $?\" with title \"$commandwas\""
+
+  unset commandwas
+  unset commandstarted
+}
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
