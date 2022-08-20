@@ -33,3 +33,9 @@
 	pretty = format:%C(auto)Hash:   %H%d%nAuthor: %Cgreen%an <%ae>%nDate:   %ad%nCommit: %cd (by %cn <%ce>)%n%n%w(80,2,4)%Cblue%s%n%+b
 [protocol]
 	version = 2
+[init]
+	defaultBranch = main
+[branch]
+	autosetuprebase = always
+[pull]
+	rebase = true

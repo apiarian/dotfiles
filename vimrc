@@ -21,13 +21,11 @@ call plug#begin()
 	Plug 'guns/xterm-color-table.vim'
 
 	Plug 'dense-analysis/ale'
+	Plug 'prabirshrestha/vim-lsp'
+	Plug 'rhysd/vim-lsp-ale'
 	Plug 'chrisbra/csv.vim'
 
 	Plug 'christoomey/vim-tmux-navigator'
-	Plug 'HerringtonDarkholme/yats'
-	Plug 'MaxMEllon/vim-jsx-pretty'
-	Plug 'davidhalter/jedi-vim'
-	Plug 'python-rope/ropevim'
 call plug#end()
 
 
@@ -219,15 +217,47 @@ augroup VimDiff
   autocmd!
   autocmd VimEnter,FilterWritePre * if &diff | ALEDisable | endif
 augroup END
-let g:ale_fixers = {'python': ['isort']}
+
+if executable('pylsp')
+	autocmd User lsp_setup call lsp#register_server({
+				\	'name': 'pylsp',
+				\	'cmd': ['pylsp'],
+				\	'allowlist': ['python'],
+				\	})
+endif
+
+if executable('typescript-language-server')
+	autocmd User lsp_setup call lsp#register_server({
+		\	'name': 'javascript and typescript-language-server',
+		\	'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+		\	'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
+		\	'whitelist': ['javascript', 'javascript.jsx', 'javascriptreact', 'typescript', 'typescript.tsx', 'typescriptreact'],
+		\	})
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+	setlocal signcolumn=yes
+
+	nmap <buffer> gd <plug>(lsp-definition)
+	nmap <buffer> gr <plug>(lsp-references)
+	nmap <buffer> gi <plug>(lsp-implementation)
+	" nmap <buffer> gt <plug>(lsp-type-definition)
+	nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+	nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+	nmap <buffer> K <plug>(lsp-hover)
+	nmap <buffer> df <plug>(lsp-document-format)
+	nmap <buffer> <leader>a <plug>(lsp-code-action)
+endfunction
+
+augroup lsp_install
+	au!
+	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 " python
-let g:jedi#completions_enabled = 0
-let g:jedi#smart_auto_mappings = 0
 set wildignore+='*.pyc'
 let g:netrw_list_hide = ',^\.\.\=/\=$,\(^\|\s\s\)\zs\.\S\+,.*\.pyc$'
 
-let g:ale_fixers = {'python': ['isort']}
 au FileType python setlocal formatoptions-=t
 
 function! ImportSplit()
@@ -247,21 +277,18 @@ au FileType json setlocal foldmethod=syntax
 " flatiron
 "
 
-let g:ale_virtualenv_dir_names = ["env", "env3"]
-let g:ale_virtualenv_dir_names = ["env3", "env"]
-
 " flatiron repo
 for repo in ["flatiron", "wario-workflows", "data-locator"]
   let s:repo_python = "/Users/apasechnik/code/" . repo . "*.py"
-  for part in ["let b:ale_python_flake8_options = '--max-line-length=120'", "set colorcolumn=121 textwidth=120", "let g:black_linelength = 120"]
+  for part in ["set colorcolumn=121 textwidth=120"]
     let s:full_command = "autocmd BufEnter,BufNewFile,BufRead " . s:repo_python . " " . part
     execute s:full_command
   endfor
 endfor
 autocmd BufEnter,BufNewFile,BufRead /Users/apasechnik/code/flatiron/*.py let test#python#pytest#executable = '/Users/apasechnik/code/flatiron/bin/pyte'
-for repo in ["qreed", "academic-document-processing"]
+for repo in ["qreed", "academic-document-processing", "phabricator-read-only"]
   let s:repo_python = "/Users/apasechnik/code/" . repo . "/*.py"
-  for part in ["let b:ale_python_flake8_options = '--max-line-length=88'", "set colorcolumn=89 textwidth=88", "let g:black_linelength=88"]
+  for part in ["set colorcolumn=89 textwidth=88"]
     let s:full_command = "autocmd BufEnter,BufNewFile,BufRead " . s:repo_python . " " . part
     execute s:full_command
   endfor
