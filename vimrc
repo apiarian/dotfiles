@@ -198,8 +198,6 @@ if has('persistent_undo')
 endif
 
 " fzf stuff
-" set runtimepath+=/usr/local/opt/fzf
-" runtime plugin/fzf.vim
 nmap ; :Buffers<CR>
 nmap <Leader>t :Files<CR>
 nmap <Leader>r :Tags<CR>
