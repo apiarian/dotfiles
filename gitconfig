@@ -4,7 +4,7 @@
 	required = true
 [user]
 	name = Aleksandr Pasechnik
-	email = apasechnik@flatiron.com
+	email = al@megamicron.net
 [core]
 	autocrlf = input
 [filter "lfs"]

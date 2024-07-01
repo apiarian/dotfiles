@@ -19,14 +19,21 @@ call plug#begin()
 	Plug 'elzr/vim-json'
 	Plug 'jremmen/vim-ripgrep'
 	Plug 'guns/xterm-color-table.vim'
+	Plug 'itchyny/vim-qfedit'
+	Plug 'supercollider/scvim'
 
 	Plug 'dense-analysis/ale'
 	Plug 'prabirshrestha/vim-lsp'
 	Plug 'rhysd/vim-lsp-ale'
 	Plug 'chrisbra/csv.vim'
+	Plug 'vim-test/vim-test'
 
 	Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
+
+
+" to filter quickfix lists
+packadd cfilter
 
 
 set nocompatible
@@ -137,6 +144,9 @@ let g:tmux_navigator_disable_when_zoomed = 1
 " append a comma
 nnoremap ,, A,<Esc>
 
+" system copy
+vnoremap YY "+y
+
 "
 " interface improvements
 "
@@ -172,8 +182,10 @@ set colorcolumn=81
 function! NumberToggle()
 	if(&relativenumber == 1)
 		set norelativenumber
+		set nonumber
 	else
 		set relativenumber
+		set number
 	endif
 endfunc
 nnoremap <C-n> :call NumberToggle()<cr>
@@ -203,6 +215,13 @@ nmap <Leader>t :Files<CR>
 nmap <Leader>r :Tags<CR>
 let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 
+function! CurrentSearch()
+	let search_term = substitute(getreg("/"), "[\W\\<>]", "", "g")
+	echo "searching for " . search_term
+	execute ":Rg '" . l:search_term . "'"
+endfunc
+nmap <Leader>R :call CurrentSearch()<cr>
+
 " ALE
 let g:ale_sign_warning = '▲'
 let g:ale_sign_error = '✗'
@@ -216,11 +235,19 @@ augroup VimDiff
   autocmd VimEnter,FilterWritePre * if &diff | ALEDisable | endif
 augroup END
 
+" pip install "python-lsp-server[all]"
+" pip install pylsp-mypy
+" pip install python-lsp-black
+" pip install pyls-isort
 if executable('pylsp')
 	autocmd User lsp_setup call lsp#register_server({
 				\	'name': 'pylsp',
 				\	'cmd': ['pylsp'],
 				\	'allowlist': ['python'],
+				\	'workspace_config': {'pylsp': {'plugins': {
+				\		'pylint': {'enabled': v:true},
+				\		'rope_autoimport': {'enabled': v:false},
+				\	}}},
 				\	})
 endif
 
@@ -245,6 +272,7 @@ endif
 function! s:on_lsp_buffer_enabled() abort
 	setlocal signcolumn=yes
 
+	nmap <buffer> gD :rightbelow vertical LspDefinition<CR>
 	nmap <buffer> gd <plug>(lsp-definition)
 	nmap <buffer> gr <plug>(lsp-references)
 	nmap <buffer> gi <plug>(lsp-implementation)
@@ -254,12 +282,31 @@ function! s:on_lsp_buffer_enabled() abort
 	nmap <buffer> K <plug>(lsp-hover)
 	nmap <buffer> df <plug>(lsp-document-format)
 	nmap <buffer> <leader>a <plug>(lsp-code-action)
+	vmap <buffer> <leader>a :LspCodeAction<CR>
 endfunction
 
 augroup lsp_install
 	au!
 	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
+
+augroup lsp_folding
+	au!
+	au FileType python if line('$') < 100 | setlocal foldmethod=expr foldexpr=lsp#ui#vim#folding#foldexpr() foldtext=lsp#ui#vim#folding#foldtext() | endif
+augroup end
+
+let g:lsp_preview_float = 0
+let g:lsp_completion_documentation_enabled = 0
+let g:lsp_format_sync_timeout = 2000
+let g:lsp_diagnostics_highlights_insert_mode_enabled = 0
+let g:lsp_diagnostics_signs_insert_mode_enabled = 0
+let g:lsp_document_code_action_signs_enabled = 0
+let g:lsp_max_buffer_size = 10000000
+let g:lsp_document_highlight_enabled = 0
+let g:lsp_signature_help_enabled = 0
+let g:lsp_hover_conceal = 0
+let g:lsp_log_file = expand('~/vim-lsp.log')
+" let g:lsp_log_file = ''
 
 " python
 set wildignore+='*.pyc'
@@ -279,6 +326,11 @@ let g:tmux_navigator_disable_when_zommed = 1
 " json
 au FileType json setlocal foldmethod=syntax
 
+" snips
+nmap <leader>s :call fzf#run({'dir': '~/snips', 'sink': '.-1r'})<CR>
+
+
+nmap <silent> <leader>T :TestNearest<CR>
 
 "
 " flatiron

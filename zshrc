@@ -71,7 +71,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git fzf httpie macos ripgrep rust tmux)
+plugins=(git fzf httpie macos ripgrep rust tmux vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -101,3 +101,22 @@ export EDITOR='vim'
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export PATH="$HOME/bin:$PATH"
+
+
+export LESS='-XFR'
+
+export GPG_TTY=$(tty)
+
+autoload edit-command-line; zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
+export VI_MODE_SET_CURSOR=true
+
+alias freshbranch='f() { git fetch origin master && git checkout -b apasechnik/$1 origin/master }; f'
+alias freshbranchmain='f() { git fetch origin main && git checkout -b apasechnik/$1 origin/main }; f'
+alias refresh-branch-on='f() { git fetch origin $1 && git rebase origin/$1 && git push --force origin HEAD }; f'
+alias stash-refresh-branch-on='f() { git stash && git fetch origin $1 && git rebase origin/$1 && git push --force origin HEAD && git stash pop }; f'
+alias start_postgres='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
+alias screensaver-message='defaults write $HOME/Library/Containers/com.apple.ScreenSaver.Computer-Name/Data/Library/Preferences/ByHost/com.apple.ScreenSaver.Computer-Name.plist MESSAGE'

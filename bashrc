@@ -3,7 +3,6 @@ export CC="/usr/bin/clang"
 export GOPATH="$HOME/code/go"
 export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
 export VAUL_ADDR="https://vault.prod.flatiron.io"
-export AWS_PROFILE="mba-foundrybolt"
 # make lifesci_portal_v2 scripts work
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 if [[ `uname` == 'Darwin' ]]; then
@@ -160,6 +159,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias activate-env-3="source ~/code/env3/bin/activate"
 alias start_postgres='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
+alias gmerge='export _CUR_BRANCH=`git branch --show-current` && git fetch origin master && git rebase origin/master && git checkout master && git reset --hard origin/master && git merge --ff-only --no-commit $_CUR_BRANCH'
+alias gpush='git fetch origin master && git rebase origin/master && git push origin HEAD'
 
 function anybar { echo -n $1 | nc -4u -w0 localhost ${2:-1738}; }
 
@@ -210,3 +211,4 @@ precmd() {
 }
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. "$HOME/.cargo/env"
